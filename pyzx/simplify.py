@@ -30,6 +30,8 @@ from typing import List, Callable, Optional, Union, Generic, Tuple, Dict, Iterat
 
 from .utils import EdgeType, VertexType, toggle_edge, vertex_is_zx, toggle_vertex
 from .rules import *
+from .heuristics.simplify import greedy_wire_reduce, random_wire_reduce, simulated_annealing_reduce
+from .heuristics.neighbor_unfusion import greedy_wire_reduce_neighbor, sim_annealing_reduce_neighbor, random_wire_reduce_neighbor
 from .graph.base import BaseGraph, VT, ET
 from .circuit import Circuit
 
@@ -213,6 +215,45 @@ def teleport_reduce(g: BaseGraph[VT,ET], quiet:bool=True, stats:Optional[Stats]=
     s.full_reduce(quiet=quiet, stats=stats)
     return s.mastergraph
 
+def greedy_simp(g: BaseGraph[VT,ET], boundaries=False, gadgets=False, max_v=None, cap=1, quiet:bool=True, stats:Optional[Stats]=None) -> int:
+    spider_simp(g, quiet=quiet, stats=stats)
+    to_gh(g)
+    i = 0
+    max_v = len(g.vertex_set()) if max_v else None
+    while True:
+        i1 = id_simp(g, quiet=quiet, stats=stats)
+        i2 = spider_simp(g, quiet=quiet, stats=stats) 
+        i3 = greedy_wire_reduce(g, boundaries=boundaries, gadgets=gadgets ,max_v=max_v, cap=cap, quiet=quiet, stats=stats)
+            
+        if i1+i2+i3==0: break
+        i += 1
+    return i  
+    
+def greedy_simp_neighbors(g: BaseGraph[VT,ET], max_v=None, cap=1, quiet:bool=True, stats:Optional[Stats]=None) -> int:
+    spider_simp(g, quiet=quiet, stats=stats)
+    to_gh(g)
+    i = 0
+    max_v = len(g.vertex_set()) if max_v else None
+    while True:
+        i1 = id_simp(g, quiet=quiet, stats=stats)
+        i2 = spider_simp(g, quiet=quiet, stats=stats) 
+        i3 = greedy_wire_reduce_neighbor(g,max_v=max_v, cap=cap, quiet=quiet, stats=stats)
+            
+        if i1+i2+i3==0: break
+        i += 1
+    return i
+
+def simulated_annealing_simp(g: BaseGraph[VT,ET], iterations = 100, alpha =0.95, cap=1, quiet:bool=True, stats:Optional[Stats]=None) -> int:
+    spider_simp(g, quiet=quiet, stats=stats)
+    to_gh(g)
+    i = 0
+    # while True:
+    i1 = id_simp(g, quiet=quiet, stats=stats)
+    i2 = spider_simp(g, quiet=quiet, stats=stats) 
+    i3 = simulated_annealing_reduce(g,iterations=iterations, alpha=alpha , cap=cap)
+    i += i1+i2+i3
+        # if i1+i2+i3==0: break
+    return i
 
 class Simplifier(Generic[VT, ET]):
     """Class used for :func:`teleport_reduce`."""

@@ -74,7 +74,7 @@ def anneal(g, iters=1000,
         sz1 = score(g1)
 
         best_scores.append(sz_best)
-
+        
         if temp != 0: temp *= 1.0 - cool
 
         if sz1 < sz or \

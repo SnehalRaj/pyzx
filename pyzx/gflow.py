@@ -50,9 +50,8 @@ end
 ```
 """
 
-from typing import Dict, Set, Tuple, Optional
+from typing import List, Dict, Set, Tuple, Optional
 
-from .extract import bi_adj
 from .linalg import Mat2
 from .graph.base import BaseGraph, VertexType, VT, ET
 
@@ -105,7 +104,8 @@ def gflow(
             x = m.solve(vu)
             if x:
                 correct.add(u)
-                gflow[u] = {processed_prime[i] for i in range(x.rows()) if x.data[i][0]}
+                gflow[u] = {processed_prime[i]
+                            for i in range(x.rows()) if x.data[i][0]}
                 l[u] = k
 
         if not correct:
@@ -115,3 +115,10 @@ def gflow(
         else:
             processed.update(correct)
             k += 1
+# Copy from extract.py but necessary since otherwise we have circular import problems
+
+
+def bi_adj(g: BaseGraph[VT, ET], vs: List[VT], ws: List[VT]) -> Mat2:
+    """Construct a biadjacency matrix between the supplied list of vertices
+    ``vs`` and ``ws``."""
+    return Mat2([[1 if g.connected(v, w) else 0 for v in vs] for w in ws])
