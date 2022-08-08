@@ -53,23 +53,24 @@ def parse_qsim(data: str) -> Circuit:
             gates.append(XPhase(target=q, phase=Fraction(-1, 2)))
         elif gdesc[1] == 'fs':
             q1 = int(gdesc[3])
-            theta = float(gdesc[4]) / math.pi
+            # theta = float(gdesc[4]) / math.pi
+            theta = Fraction(1, 2)
             phi = float(gdesc[5]) / math.pi
-            # gates.append(HAD(target=q))
-            # gates.append(HAD(target=q1))
-            # gates.append(ParityPhase(theta, q, q1))
-            # gates.append(HAD(target=q))
-            # gates.append(HAD(target=q1))
-            # gates.append(XPhase(target=q, phase=Fraction(-1, 2)))
-            # gates.append(XPhase(target=q1, phase=Fraction(-1, 2)))
-            # gates.append(ParityPhase(theta, q, q1))
-            # gates.append(XPhase(target=q, phase=Fraction(1, 2)))
-            # gates.append(XPhase(target=q1, phase=Fraction(1, 2)))
-            # gates.append(ZPhase(target=q, phase=-1/2*phi))
-            # gates.append(ZPhase(target=q1, phase=-1/2*phi))
-            # gates.append(ParityPhase(phi*1/2, q, q1))
+            gates.append(HAD(target=q))
+            gates.append(HAD(target=q1))
+            gates.append(ParityPhase(theta, q, q1))
+            gates.append(HAD(target=q))
+            gates.append(HAD(target=q1))
+            gates.append(XPhase(target=q, phase=Fraction(-1, 2)))
+            gates.append(XPhase(target=q1, phase=Fraction(-1, 2)))
+            gates.append(ParityPhase(theta, q, q1))
+            gates.append(XPhase(target=q, phase=Fraction(1, 2)))
+            gates.append(XPhase(target=q1, phase=Fraction(1, 2)))
+            gates.append(ZPhase(target=q, phase=-1/2*phi))
+            gates.append(ZPhase(target=q1, phase=-1/2*phi))
+            gates.append(ParityPhase(phi*1/2, q, q1))
 
-            gates.append(FSim(Fraction(theta), Fraction(phi), q, q1))
+            # gates.append(FSim(Fraction(theta), Fraction(phi), q, q1))
 
     c = Circuit(qcount)
     c.gates = gates
