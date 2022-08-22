@@ -28,7 +28,7 @@ except ImportError:
 from .utils import EdgeType, VertexType
 from .graph.base import BaseGraph
 from .simplify import to_gh
-from .hsimplify import from_hypergraph_form, to_hypergraph_form
+from .hsimplify import from_hypergraph_form
 from .tensor import H_to_tensor
 
 
@@ -47,7 +47,7 @@ def to_quimb_tensor(g: BaseGraph) -> 'qtn.TensorNetwork':
 
     # only Z spiders are handled below
     to_gh(g)
-    to_hypergraph_form(g)
+    from_hypergraph_form(g)
     tensors = []
 
     # Here we have phase tensors corresponding to Z-spiders with only one output and no input.
